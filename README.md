@@ -6,7 +6,7 @@ Welcome to my CCNA lab portfolio! This repository contains my completed hands-on
 
 ## 📂 Lab Index & Topics Covered
 
-### 1. Day 08 - Interface Configuration & Basic Routing Setup
+### 1. - Interface Configuration & Basic Routing Setup
 * **Concepts:** Basic IOS CLI, Subnetting, Interface Details (Speed/Duplex/Description), Device Hardening (Disabling Unused Ports), Configuration Persistence (copy running-config startup-config).
 * **Networks Configured:**15.0.0.0/8, 182.98.0.0/16, 201.191.20.0/24.
 * **Key Lessons & Troubleshooting:**
@@ -16,7 +16,7 @@ Welcome to my CCNA lab portfolio! This repository contains my completed hands-on
 
 ---
 
-### 2. Day 11 - Static Routing Fundamentals & Routing Table Analysis
+### 2.  - Static Routing Fundamentals & Routing Table Analysis
 * **Concepts:** Static Routes (ip route), Next-Hop IP vs. Exit Interface, Administrative Distance (AD), Routing Table Types (C, L, S).
 * **Key Tasks:**
   * Configured static routing across a multi-router topology to connect isolated LAN segments.
@@ -25,7 +25,7 @@ Welcome to my CCNA lab portfolio! This repository contains my completed hands-on
 
 ---
 
-### 3. Day 12 - Life of a Packet & Multi-Router Static Routing
+### 3. - Life of a Packet & Multi-Router Static Routing
 * **Concepts:** Two-way Static Routing, Packet Encapsulation/Decapsulation, Layer 2 vs. Layer 3 Header Modifications, TTL Management.
 * **Key Tasks & Verification:**
   * Established full two-way reachability across intermediate routers.
@@ -36,7 +36,7 @@ Welcome to my CCNA lab portfolio! This repository contains my completed hands-on
 
 ---
 
-### 4. Day 15 - Advanced Subnetting (VLSM) & Topology Allocation
+### 4. - Advanced Subnetting (VLSM) & Topology Allocation
 * **Concepts:** Variable Length Subnet Masking (VLSM), Efficient IP Allocation, Gateway Configuration, Multi-LAN Static Routing.
 * **Base Network:** `192.168.5.0/24`
 * **Subnet Allocations:**
@@ -49,6 +49,23 @@ Welcome to my CCNA lab portfolio! This repository contains my completed hands-on
 
 ---
 
+
+### 5. Day 16 - VLAN Fundamentals & Broadcast Domain Isolation
+* **Concepts:** Virtual LANs (VLANs), Layer 2 Broadcast Domain Isolation, Access Ports (`switchport mode access`), Access VLAN Assignment.
+* **Key Tasks:**
+  * Created and named 3 distinct VLANs across network departments:
+    * **VLAN 10 (Engineering):** `10.0.0.0/26`
+    * **VLAN 20 (HR):** `10.0.0.64/26`
+    * **VLAN 30 (Sales):** `10.0.0.128/26`
+  * Assigned switch ports to respective access VLANs on Cisco Catalyst 2960 Switch.
+  * **Hardware Workaround:** Utilized FastEthernet port (`F0/13`) alongside Gigabit ports (`G0/1`, `G0/2`) to establish 3 physical inter-VLAN routing connections to Router R1.
+  * **Verification & Testing:**
+    * Achieved 100% end-to-end ICMP reachability (`PC1` to `PC9`) via Inter-VLAN routing.
+    * Tested broadcast address (`10.0.0.62`) behavior to verify that Layer 2 broadcast traffic is strictly contained within its assigned VLAN and does not cross the router boundary.
+
+ ---
+
+
 ## 🛠️ Tools & Technologies
-* **Simulator:** Cisco Packet Tracer
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting
+* **Simulator:** Cisco Packet Tracer 9.0.1v
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN
