@@ -6,7 +6,7 @@ Welcome to my CCNA lab portfolio! This repository contains my completed hands-on
 
 ## 📂 Lab Index & Topics Covered
 
-### 1. - Interface Configuration & Basic Routing Setup
+### 1.Day-8 Interface Configuration & Basic Routing Setup
 * **Concepts:** Basic IOS CLI, Subnetting, Interface Details (Speed/Duplex/Description), Device Hardening (Disabling Unused Ports), Configuration Persistence (copy running-config startup-config).
 * **Networks Configured:**15.0.0.0/8, 182.98.0.0/16, 201.191.20.0/24.
 * **Key Lessons & Troubleshooting:**
@@ -16,7 +16,7 @@ Welcome to my CCNA lab portfolio! This repository contains my completed hands-on
 
 ---
 
-### 2.  - Static Routing Fundamentals & Routing Table Analysis
+### 2. Day-11 Static Routing Fundamentals & Routing Table Analysis
 * **Concepts:** Static Routes (ip route), Next-Hop IP vs. Exit Interface, Administrative Distance (AD), Routing Table Types (C, L, S).
 * **Key Tasks:**
   * Configured static routing across a multi-router topology to connect isolated LAN segments.
@@ -25,7 +25,7 @@ Welcome to my CCNA lab portfolio! This repository contains my completed hands-on
 
 ---
 
-### 3. - Life of a Packet & Multi-Router Static Routing
+### 3. Day-12 Life of a Packet & Multi-Router Static Routing
 * **Concepts:** Two-way Static Routing, Packet Encapsulation/Decapsulation, Layer 2 vs. Layer 3 Header Modifications, TTL Management.
 * **Key Tasks & Verification:**
   * Established full two-way reachability across intermediate routers.
@@ -36,7 +36,7 @@ Welcome to my CCNA lab portfolio! This repository contains my completed hands-on
 
 ---
 
-### 4. - Advanced Subnetting (VLSM) & Topology Allocation
+### 4. Day-15 Advanced Subnetting (VLSM) & Topology Allocation
 * **Concepts:** Variable Length Subnet Masking (VLSM), Efficient IP Allocation, Gateway Configuration, Multi-LAN Static Routing.
 * **Base Network:** `192.168.5.0/24`
 * **Subnet Allocations:**
@@ -194,7 +194,164 @@ Native VLAN Security: Changing the default Native VLAN (VLAN 1) to an unused ID 
 Sub-interface Mapping: ROAS enables scalable Inter-VLAN routing over a single physical link by utilizing 802.1Q encapsulation tagging.
 
  ---
+# Dayb 18 -  Layer 3 Switching, SVIs & Internet Routing
+
+## 📌 Project Overview
+This project demonstrates the transition from a traditional Router-on-a-Stick (ROAS) topology to a highly efficient **Layer 3 Switching (Multilayer Switching)** architecture using **Cisco Packet Tracer**. Furthermore, this lab includes a complete end-to-end setup to an external ISP router to simulate real-world internet connectivity from local VLANs.
+
+##  Network Topology & Addressing
+The network is segmented into three local VLANs, a point-to-point Layer 3 link to the Edge Router, and an external simulated Internet connection.
+
+* **VLAN 10 (Engineering):** `10.0.0.0/26`
+* **VLAN 20 (Pharmacy):** `10.0.0.64/26`
+* **VLAN 30 (BBA):** `10.0.0.128/26`
+* **L3 Link (SW2 to R1):** `10.0.0.192/30`
+* **WAN Link (R1 to ISP):** `200.1.1.0/30`
+* **Internet Cloud (Loopback):** `1.1.1.1/32`
+
+##  Step-by-Step Configuration Commands
+### 1. Multilayer Switch (SW2) Configuration
+Configuring IP routing, Routed Ports, Switch Virtual Interfaces (SVIs) as default gateways, and a default route to the edge router.
+SW2> enable
+SW2# configure terminal
+
+! Enable IPv4 Routing on the Switch
+SW2(config)# ip routing
+
+! Configure Routed Port towards Edge Router (R1)
+SW2(config)# interface GigabitEthernet 1/0/2
+SW2(config-if)# no switchport
+SW2(config-if)# ip address 10.0.0.193 255.255.255.252
+SW2(config-if)# no shutdown
+SW2(config-if)# exit
+
+! Configure SVIs (Default Gateways for VLANs)
+SW2(config)# interface vlan 10
+SW2(config-if)# ip address 10.0.0.62 255.255.255.192
+SW2(config-if)# no shutdown
+
+SW2(config)# interface vlan 20
+SW2(config-if)# ip address 10.0.0.126 255.255.255.192
+SW2(config-if)# no shutdown
+
+SW2(config)# interface vlan 30
+SW2(config-if)# ip address 10.0.0.190 255.255.255.192
+SW2(config-if)# no shutdown
+SW2(config-if)# exit
+
+! Default Route to Edge Router
+SW2(config)# ip route 0.0.0.0 0.0.0.0 10.0.0.194
+2. Edge Router (R1) Configuration
+Connecting the local LAN to the external ISP, including default and static routing.
+R1> enable
+R1# configure terminal
+
+! Interface connected to Multilayer Switch (SW2)
+R1(config)# interface GigabitEthernet 0/0
+R1(config-if)# ip address 10.0.0.194 255.255.255.252
+R1(config-if)# no shutdown
+R1(config-if)# exit
+
+! Interface connected to ISP Router
+R1(config)# interface GigabitEthernet 0/1
+R1(config-if)# ip address 200.1.1.1 255.255.255.252
+R1(config-if)# no shutdown
+R1(config-if)# exit
+
+! Default route towards the Internet (ISP)
+R1(config)# ip route 0.0.0.0 0.0.0.0 200.1.1.2
+
+! Static route to send return traffic back to local VLANs
+R1(config)# ip route 10.0.0.0 255.255.255.0 10.0.0.193
+3. ISP (Internet) Router Configuration
+Simulating the external internet environment using a Loopback interface and providing a return route to the enterprise LAN.
+ISP> enable
+ISP# configure terminal
+
+! Interface connected to Edge Router (R1)
+ISP(config)# interface GigabitEthernet 0/0
+ISP(config-if)# ip address 200.1.1.2 255.255.255.252
+ISP(config-if)# no shutdown
+ISP(config-if)# exit
+
+! Simulating an Internet IP (e.g., Cloud DNS)
+ISP(config)# interface loopback 0
+ISP(config-if)# ip address 1.1.1.1 255.255.255.255
+ISP(config-if)# exit
+
+! Return route to the enterprise network (LAN)
+ISP(config)# ip route 10.0.0.0 255.255.255.0 200.1.1.1
+ Verification & Testing
+SVI Status: Executed show ip interface brief on SW2 to ensure all VLAN SVIs are up/up.
+Routing Tables: Verified routing tables using show ip route on SW2, R1, and ISP routers to confirm connected, local, and static routes.
+Inter-VLAN Connectivity: Successfully pinged from PC (VLAN 10) to PC (VLAN 30), confirming L3 Switch internal routing.
+Internet Connectivity: Successfully executed ping 1.1.1.1 from local PCs, proving complete end-to-end packet delivery and return from the ISP loopback interface.
+ Key Takeaways
+L3 Switching Efficiency: Replacing ROAS with SVIs on a Multilayer Switch significantly optimizes Inter-VLAN routing by avoiding bottleneck single-link trunk connections.
+Routed Ports: A no switchport command effectively converts a Layer 2 switchport into a fully functional Layer 3 routed interface.
+IP Routing Prerequisite: By default, Layer 3 switches act as Layer 2 devices. The ip routing global configuration command is mandatory to enable the routing engine.
+End-to-End Routing Logic: Ensuring successful external communication requires configuring both outbound default routes and inbound static return routes across all participating L3 devices.
+
+
+ ---
+ # Day-21 Spanning Tree Protocol (STP) & PVST+ Configuration Lab
+
+## 📌 Project Overview
+This repository contains a practical Cisco Packet Tracer lab focused on **Spanning Tree Protocol (STP)** and **PVST+ (Per-VLAN Spanning Tree Plus)**. The objective of this lab is to demonstrate how to prevent Layer 2 loops, optimize network traffic through load balancing, manipulate STP path selection, and secure access ports.
+
+## 🏗️ Network Topology
+* **Switches:** 4x Cisco Catalyst Switches (SW1, SW2, SW3, SW4)
+* **End Devices:** 2x PCs (PC1 in VLAN 1, PC2 in VLAN 2)
+* **Connections:** Redundant trunk links between switches to simulate potential Layer 2 loops.
+
+## 🎯 Lab Objectives & Tasks Completed
+This lab covers the following core STP configurations:
+
+1. **Verify Default STP State:** 
+   * Analyzed the default Root Bridge election and identified Root, Designated, and Blocking ports.
+2. **PVST+ Load Balancing:** 
+   * Configured **SW1** as the Primary Root Bridge for VLAN 1 and Secondary for VLAN 2.
+   * Configured **SW2** as the Primary Root Bridge for VLAN 2 and Secondary for VLAN 1.
+   * *Result:* Effectively utilized all redundant physical links by dividing VLAN traffic.
+3. **STP Path Cost Manipulation:** 
+   * Increased the VLAN 1 cost of SW4's F0/2 interface to `100`.
+   * *Result:* Forced SW4 to calculate a new path and select a different Root Port.
+4. **STP Port Priority Manipulation:** 
+   * Increased the VLAN 1 port priority of SW1's F0/1 interface to `240`.
+   * *Result:* Forced downstream switches to prefer an alternate path due to the inferior priority.
+5. **STP Edge Port Security:** 
+   * Configured **PortFast** on access ports (F0/3 on SW3 and SW4) to bypass listening/learning states for immediate forwarding.
+   * Configured **BPDU Guard** on the same access ports to protect the STP topology from unauthorized switches (err-disable on BPDU receipt).
+
+## 🛠️ Commands Used
+Here are some of the key Cisco IOS commands practiced in this lab:
+```text
+# Root Bridge Configuration
+SW1(config)# spanning-tree vlan 1 root primary
+SW1(config)# spanning-tree vlan 2 root secondary
+
+# Path Cost Manipulation
+SW4(config-if)# spanning-tree vlan 1 cost 100
+
+# Port Priority Manipulation
+SW1(config-if)# spanning-tree vlan 1 port-priority 240
+
+# Security Features
+SW3(config-if)# spanning-tree portfast
+SW3(config-if)# spanning-tree bpduguard enable
+
+# Verification
+SW1# show spanning-tree
+SW1# show spanning-tree vlan 1
+🚀 How to Use This Lab
+Download the STP_PVST_Lab.pkt file from this repository.
+
+Open the file using Cisco Packet Tracer.
+
+Access the CLI of any switch and use the show spanning-tree command to observe the current port states and Root Bridge status.
+ ---
+
 
 ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+
