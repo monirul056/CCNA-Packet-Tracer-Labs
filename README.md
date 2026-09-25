@@ -356,16 +356,7 @@ Download the STP_PVST_Lab.pkt file from this repository.
 Open the file using Cisco Packet Tracer.
 
 Access the CLI of any switch and use the show spanning-tree command to observe the current port states and Root Bridge status.
- ---
-### 1.Day-8 Interface Configuration & Basic Routing Setup
-* **Concepts:** Basic IOS CLI, Subnetting, Interface Details (Speed/Duplex/Description), Device Hardening (Disabling Unused Ports), Configuration Persistence (copy running-config startup-config).
-* **Networks Configured:**15.0.0.0/8, 182.98.0.0/16, 201.191.20.0/24.
-* **Key Lessons & Troubleshooting:**
-  * Resolved inter-subnet ping failure caused by a physical port mismatch (cabled to G0/2 instead of G0/1).
-  * Analyzed initial ICMP timeout caused by ARP latency.
-  * Ensured NVRAM memory persistence to retain setup post-reboot.
-
----
+ --- 
 
 
 
