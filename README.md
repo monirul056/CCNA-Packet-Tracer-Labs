@@ -194,7 +194,10 @@ Native VLAN Security: Changing the default Native VLAN (VLAN 1) to an unused ID 
 Sub-interface Mapping: ROAS enables scalable Inter-VLAN routing over a single physical link by utilizing 802.1Q encapsulation tagging.
 
  ---
- # Dayb 18 -  Layer 3 Switching, SVIs & Internet Routing
+
+
+
+
 # Dayb 18 -  Layer 3 Switching, SVIs & Internet Routing
 
 ## 📌 Project Overview
@@ -295,6 +298,9 @@ End-to-End Routing Logic: Ensuring successful external communication requires co
 
 
  ---
+
+
+
  # Day-21 Spanning Tree Protocol (STP) & PVST+ Configuration Lab
 
 ## 📌 Project Overview
@@ -351,6 +357,8 @@ Open the file using Cisco Packet Tracer.
 
 Access the CLI of any switch and use the show spanning-tree command to observe the current port states and Root Bridge status.
  ---
+
+
 
 
 ## 🛠️ Tools & Technologies
