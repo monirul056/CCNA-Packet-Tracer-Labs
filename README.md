@@ -358,8 +358,63 @@ Open the file using Cisco Packet Tracer.
 Access the CLI of any switch and use the show spanning-tree command to observe the current port states and Root Bridge status.
  --- 
 
+ # Day - 23 EtherChannel (LACP, PAgP & Layer 3) Lab
 
+## 📌 Project Overview
+This repository contains a practical Cisco Packet Tracer lab demonstrating the configuration and verification of **EtherChannel**. The objective is to bundle multiple physical links into single logical interfaces to increase bandwidth, provide redundancy, and bypass Spanning Tree Protocol (STP) port blocking.
+
+##  Network Topology
+* **Distribution Layer:** 2x Cisco 3650 Multilayer Switches (DSW1, DSW2)
+* **Access Layer:** 2x Cisco 2960 Switches (ASW1, ASW2)
+* **End Devices:** 2x PCs (VLAN 1) and 1x Server
+* **Connections:** Redundant GigabitEthernet links bundled into Port-Channels.
+
+##  Lab Objectives & Configurations Completed
+1. **Layer 2 EtherChannel (LACP):** 
+   * Configured IEEE 802.3ad LACP (Active mode) between ASW1 and DSW1.
+   * Configured `dot1q` encapsulation and trunking on the port-channel interface.
+2. **Layer 2 EtherChannel (PAgP):** 
+   * Configured Cisco proprietary PAgP (Desirable mode) between ASW2 and DSW2.
+3. **Layer 3 EtherChannel (Static):** 
+   * Converted physical interfaces between DSW1 and DSW2 to routed ports (`no switchport`).
+   * Bundled them using `mode on` (Static EtherChannel) and assigned `/30` IP addresses directly to the port-channel interface.
+4. **Inter-VLAN Routing & Static Routes:** 
+   * Configured SVIs (Switch Virtual Interfaces) for default gateways.
+   * Established static IP routing between the Layer 3 switches to ensure end-to-end connectivity from PCs to the Server.
+5. **EtherChannel Load Balancing:** 
+   * Changed the default load-balancing hash algorithm from MAC-based to `src-dst-ip` for optimized traffic flow.
+
+##  Key CLI Commands Practiced
+```text
+# LACP Configuration (Layer 2)
+Switch(config-if-range)# channel-group 1 mode active
+Switch(config)# interface port-channel 1
+Switch(config-if)# switchport trunk encapsulation dot1q
+Switch(config-if)# switchport mode trunk
+
+# Layer 3 EtherChannel Configuration
+DSW1(config-if-range)# no switchport
+DSW1(config-if-range)# channel-group 12 mode on
+DSW1(config)# interface port-channel 12
+DSW1(config-if)# ip address 10.0.0.1 255.255.255.252
+
+# Load Balancing Verification & Config
+Switch# show etherchannel load-balance
+Switch(config)# port-channel load-balance src-dst-ip
+
+# Verification
+Switch# show etherchannel summary
+ How to Use This Lab
+Download the EtherChannel_Lab.pkt file from this repository.
+
+Open it in Cisco Packet Tracer.
+
+Access the CLI of any switch and run show etherchannel summary to observe the SU (Layer 2) and RU (Layer 3) port-channel states.
+
+Ping from PC1 (172.16.1.1) to Server 1 (172.16.2.1) to verify end-to-end routing over the Layer 3 EtherChannel.
+
+ --- 
 
 ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3
