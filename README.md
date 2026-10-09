@@ -415,6 +415,46 @@ Ping from PC1 (172.16.1.1) to Server 1 (172.16.2.1) to verify end-to-end routing
 
  --- 
 
+ # Day-25 EIGRP Configuration & Unequal-Cost Load Balancing
+
+##  Overview
+This repository contains a Cisco Packet Tracer lab focused on advanced **EIGRP (Enhanced Interior Gateway Routing Protocol)** configurations. The lab demonstrates how to establish EIGRP neighbor adjacencies, optimize routing updates, and implement unequal-cost load balancing to utilize both primary and backup paths simultaneously.
+
+##  Topology Details
+* **Devices Used:** Cisco Routers (4331/2911 series), Cisco 2960 Switches, and End Devices (PCs/Servers).
+* **Routing Protocol:** EIGRP (Autonomous System: 50)
+* **Addressing:** Custom /30 subnets for WAN links and /24 subnets for LAN environments.
+
+##  Key Learning Objectives & Concepts Implemented
+In this lab, I have successfully configured and verified the following concepts:
+* **EIGRP Adjacencies:** Formed neighbor relationships using network wildcard masks.
+* **Loopback Interfaces:** Configured virtual interfaces (`Loopback 0`) on all routers for stability and EIGRP Router ID selection.
+* **Auto-Summary:** Disabled automatic network summarization (`no auto-summary`) for precise routing table entries.
+* **Passive Interfaces:** Secured network resources by stopping unnecessary EIGRP updates on LAN and loopback interfaces (`passive-interface`).
+* **EIGRP Metrics:** Analyzed the topology table to understand **Feasible Distance (FD)** and **Reported/Advertised Distance (RD)**.
+* **Successor & Feasible Successor:** Identified the best route (Successor) and the loop-free backup route (Feasible Successor).
+* **Unequal-Cost Load Balancing:** Configured the `variance` command to allow EIGRP to route traffic across paths with different metrics.
+
+##  Core Configurations
+Here is a snippet of the core EIGRP configuration used on the routers:
+
+```text
+Router(config)# router eigrp 50
+Router(config-router)# no auto-summary
+Router(config-router)# network 10.0.0.0 0.0.0.3
+Router(config-router)# network 192.168.4.0 0.0.0.255
+Router(config-router)# passive-interface default
+Router(config-router)# no passive-interface GigabitEthernet0/0/0
+Router(config-router)# variance 2
+
+🔍 Verification Commands Used
+To verify the EIGRP topology and load-balancing, the following CLI commands were used:
+show ip protocols - To verify the AS number, passive interfaces, and variance multiplier.
+show ip eigrp neighbors - To verify active EIGRP neighbor adjacencies.
+show ip eigrp topology - To inspect the FD, RD, and identify the Feasible Successors.
+show ip route eigrp - To confirm that multiple paths with unequal costs are actively installed in the routing table.
+ ---
+
 ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, EIGRP
