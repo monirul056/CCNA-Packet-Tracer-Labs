@@ -454,7 +454,119 @@ show ip eigrp neighbors - To verify active EIGRP neighbor adjacencies.
 show ip eigrp topology - To inspect the FD, RD, and identify the Feasible Successors.
 show ip route eigrp - To confirm that multiple paths with unequal costs are actively installed in the routing table.
  ---
+# Day -29 First Hop Redundancy Protocol (HSRP) Configuration 🚀
 
+## 📌 Project Overview
+This repository contains a complete Cisco Packet Tracer lab focused on **HSRP (Hot Standby Router Protocol)**. The goal of this project is to eliminate single points of failure in a network by providing a redundant default gateway for end devices. 
+
+In this lab, I configured an Active/Standby router setup where the Standby router seamlessly takes over traffic forwarding if the Active router goes down.
+
+## 🎯 Lab Objectives
+* Design a network topology simulating a LAN connecting to an external internet server.
+* Configure basic IP addressing and static routing.
+* Implement **HSRP Version 2** for gateway redundancy.
+* Manipulate HSRP roles using **Priority** and enable **Preemption**.
+* Verify failover and recovery mechanisms using the `tracert` utility.
+
+## 🖥️ Network Topology Details
+* **R1 (Active Router):** Main gateway for the LAN (Priority: 200).
+* **R2 (Standby Router):** Backup gateway (Priority: Default 100).
+* **Virtual IP (VIP):** `10.0.1.254` (Acts as the default gateway for all PCs).
+* **R3 (ISP/Server):** Simulates the external internet with a Loopback address `8.8.8.8`.
+
+*(Note: Add a screenshot of your Packet Tracer topology here and link it like this: `![Network Topology](image-link.png)`)*
+
+---
+
+## 🛠️ Step-by-Step Configuration
+
+### 1. Router 1 (Active Router) Configuration
+```text
+enable
+configure terminal
+
+! Interface IP Configuration
+interface g0/0
+ ip address 10.0.1.253 255.255.255.0
+ no shutdown
+ exit
+interface g0/1
+ ip address 203.0.113.1 255.255.255.252
+ no shutdown
+ exit
+
+! Static Routing
+ip route 0.0.0.0 0.0.0.0 203.0.113.2
+
+! HSRP Configuration
+interface g0/0
+ standby version 2
+ standby 1 ip 10.0.1.254
+ standby 1 priority 200
+ standby 1 preempt
+ exit
+Router 2 (Standby Router) Configuration
+ enable
+configure terminal
+
+! Interface IP Configuration
+interface g0/0
+ ip address 10.0.1.252 255.255.255.0
+ no shutdown
+ exit
+interface g0/1
+ ip address 203.0.113.5 255.255.255.252
+ no shutdown
+ exit
+
+! Static Routing
+ip route 0.0.0.0 0.0.0.0 203.0.113.6
+
+! HSRP Configuration
+interface g0/0
+ standby version 2
+ standby 1 ip 10.0.1.254
+ exit
+ (Since the default priority is 100, R2 automatically becomes the Standby router. Preemption is not strictly required here but can be added.)
+ Router 3 (ISP / External Server) Configuration
+ enable
+configure terminal
+
+! Interface IP Configuration
+interface g0/0
+ ip address 203.0.113.2 255.255.255.252
+ no shutdown
+ exit
+interface g0/1
+ ip address 203.0.113.6 255.255.255.252
+ no shutdown
+ exit
+
+! Simulated Internet Server (Loopback)
+interface loopback 0
+ ip address 8.8.8.8 255.255.255.255
+ no shutdown
+ exit
+
+! Static Routing (Returning traffic to LAN)
+ip route 10.0.1.0 255.255.255.0 203.0.113.1
+ip route 10.0.1.0 255.255.255.0 203.0.113.5
+
+End Device (PC) Configuration
+IP Address: 10.0.1.10 / 10.0.1.20
+Subnet Mask: 255.255.255.0
+Default Gateway: 10.0.1.254 (The HSRP Virtual IP)
+Check HSRP Status:
+Executed on R1 and R2 to confirm Active/Standby roles, Virtual IP, and Virtual MAC.
+#show standby
+Failover Test (The Ultimate Proof):
+Ran a trace route from the PC to the server before failure:
+tracert 8.8.8.8 (Traffic goes through R1 - 10.0.1.253).
+Powered off R1.
+Ran trace route again:
+tracert 8.8.8.8 (Traffic seamlessly re-routes through R2 - 10.0.1.252).
+Powered R1 back on. Thanks to Preemption, R1 automatically reclaimed its Active status.
+ ---
 ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, EIGRP
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, EIGRP,OSPF,HSRP
