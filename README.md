@@ -567,6 +567,76 @@ Ran trace route again:
 tracert 8.8.8.8 (Traffic seamlessly re-routes through R2 - 10.0.1.252).
 Powered R1 back on. Thanks to Preemption, R1 automatically reclaimed its Active status.
  ---
+#Day -24 Network Redundancy and Failover using Floating Static Routes
+
+## 📌 Project Overview
+This project demonstrates how to achieve high availability and network failover using **Static Routing** and **Floating Static Routes** in Cisco Packet Tracer. Instead of relying on dynamic routing protocols, this lab manually controls route prioritization by manipulating the Administrative Distance (AD).
+
+### 🎯 Key Objectives
+* Establish primary communication between two enterprise routers (R1 and R2) using a direct static route.
+* Configure backup transit paths via ISP A and ISP B.
+* Implement Floating Static Routes (AD = 5) to automatically route traffic through the ISPs if the primary R1-R2 link fails.
+* Verify traffic path and failover mechanism using `ping` and `tracert`.
+
+## ⚙️ Step-by-Step Configuration
+
+### 1. Router 1 (R1) Configuration
+Configure the primary static route towards R2's LAN and set up the floating static routes pointing to ISP A and ISP B as backups with an AD of 5.
+
+```text
+enable
+configure terminal
+
+! Primary path directly to R2 LAN (Default AD = 1)
+ip route 10.0.2.0 255.255.255.0 10.0.0.2
+
+! Backup path via ISP A (Administrative Distance = 5)
+ip route 10.0.2.0 255.255.255.0 203.0.113.1 5
+
+! Backup path via ISP B (Administrative Distance = 5)
+ip route 10.0.2.0 255.255.255.0 203.0.113.9 5
+Router 2 (R2) Configuration
+Similarly, configure the primary route towards R1's LAN and establish the floating backup routes via the ISPs.
+enable
+configure terminal
+
+! Primary path directly to R1 LAN (Default AD = 1)
+ip route 10.0.1.0 255.255.255.0 10.0.0.1
+
+! Backup path via ISP A (Administrative Distance = 5)
+ip route 10.0.1.0 255.255.255.0 203.0.113.5 5
+
+! Backup path via ISP B (Administrative Distance = 5)
+ip route 10.0.1.0 255.255.255.0 203.0.113.13 5
+To allow traffic to pass through the ISPs when the primary link is down, basic static routing is required on the ISP routers to reach the Enterprise LANs.
+
+ISP A Router(s):
+enable
+configure terminal
+
+! Route to R1's LAN (PC1)
+ip route 10.0.1.0 255.255.255.0 203.0.113.2
+
+! Route to R2's LAN (SRV1)
+ip route 10.0.2.0 255.255.255.0 203.0.113.6
+
+Verification & Testing
+To ensure the failover configuration works as intended, the following tests were conducted:
+
+Verify Routing Table:
+Run show ip route on R1 and R2. Only the primary route (via 10.0.0.x) should be visible in the routing table initially.
+
+Trace Normal Traffic Flow:
+From PC1, run tracert 10.0.2.1 (SRV1). The traffic will travel through the direct link (10.0.0.2).
+
+Simulate Link Failure:
+On R1, shut down the primary interface:
+R1(config)# interface g0/0
+R1(config-if)# shutdown
+Verify Failover:
+Run show ip route again. The routing table will now display the backup ISP route.
+Run tracert 10.0.2.1 from PC1. The trace route will confirm that the traffic is now successfully rerouted through the ISP without losing connectivity.
+ ---
 ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, EIGRP,OSPF,HSRP
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP
