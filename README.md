@@ -637,6 +637,54 @@ Verify Failover:
 Run show ip route again. The routing table will now display the backup ISP route.
 Run tracert 10.0.2.1 from PC1. The trace route will confirm that the traffic is now successfully rerouted through the ISP without losing connectivity.
  ---
-## 🛠️ Tools & Technologies
+ Day -34  ACL Standard Configuration
+## 🛠️ Configuration Details
+
+Below are the CLI commands used in this lab to configure base routing and Standard Access Control Lists (ACLs).
+
+### 1. Base Routing Configuration (OSPF)
+To ensure full reachability across the network before applying security policies.
+
+**Router 1 (R1):**
+```cisco
+R1(config)# router ospf 10
+R1(config-router)# network 192.168.1.0 0.0.0.255 area 0
+R1(config-router)# network 10.0.0.0 0.0.0.3 area 0
+R1(config-router)# exit
+R2(config)# router ospf 10
+R2(config-router)# network 192.168.2.0 0.0.0.255 area 0
+R2(config-router)# network 10.0.1.0 0.0.0.255 area 0
+R2(config-router)# network 10.0.0.0 0.0.0.3 area 0
+R2(config-router)# exit
+
+Standard Numbered ACL Configuration (R1)
+! Creating the ACL
+R1(config)# access-list 10 deny host 192.168.1.50
+R1(config)# access-list 10 permit any
+
+! Applying the ACL to the interface (Outbound)
+R1(config)# interface GigabitEthernet0/1
+R1(config-if)# ip access-group 10 out
+R1(config-if)# exit
+
+Standard Named ACL Configuration (R2)
+! Creating the Named ACL
+R2(config)# ip access-list standard RESTRICT_ACCESS
+R2(config-std-nacl)# deny 192.168.2.0 0.0.0.255
+R2(config-std-nacl)# permit any
+R2(config-std-nacl)# exit
+
+! Applying the ACL to the interface (Outbound)
+R2(config)# interface GigabitEthernet0/2
+R2(config-if)# ip access-group RESTRICT_ACCESS out
+R2(config-if)# exit
+
+Verification Commands Used
+show ip access-lists
+show access-lists
+show ip interface brief
+ ---
+
+ ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard,
