@@ -684,7 +684,56 @@ show ip access-lists
 show access-lists
 show ip interface brief
  ---
+ Day-38 DNS Configuration
+
+ R1 (203.0.113.2)
+interface GigabitEthernet0/0
+ ip address 203.0.113.2 255.255.255.252
+ no shutdown
+exit
+ DNS Server (1.1.1.1) 
+interface GigabitEthernet0/1
+ ip address 1.1.1.254 255.255.255.0
+ no shutdown
+exit
+ YouTube Server (2.2.2.2) 
+interface GigabitEthernet0/2
+ ip address 2.2.2.254 255.255.255.0
+ no shutdown
+exit
+ LAN (192.168.0.0/24) 
+ip route 192.168.0.0 255.255.255.0 203.0.113.1
+R1--
+enable
+configure terminal
+hostname R1
+
+ LAN 
+interface GigabitEthernet0/1
+ ip address 192.168.0.254 255.255.255.0
+ no shutdown
+exit
+
+ WAN/Internet
+interface GigabitEthernet0/0
+ ip address 203.0.113.1 255.255.255.252
+ no shutdown
+exit
+ip route 0.0.0.0 0.0.0.0 203.0.113.2
+External DNS Server
+ip name-server 1.1.1.1
+
+ Local Host Table
+ip host R1 192.168.0.254
+ip host PC1 192.168.0.1
+ip host PC2 192.168.0.2
+ip host PC3 192.168.0.3
+Verification and Testing
+R1# ping PC1
+PC1: ping youtube.com
+  ---
+
 
  ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard,
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS
