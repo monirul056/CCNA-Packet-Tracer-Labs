@@ -732,7 +732,56 @@ Verification and Testing
 R1# ping PC1
 PC1: ping youtube.com
   ---
+Day-39 DHCP
 
+R2> enable
+R2# configure terminal
+R2(config)# interface g0/1
+R2(config-if)# ip address 192.168.2.1 255.255.255.0
+R2(config-if)# no shutdown
+R2(config-if)# exit
+
+R2(config)# interface g0/0
+R2(config-if)# ip address 203.0.113.1 255.255.255.252
+R2(config-if)# no shutdown
+R2(config-if)# exit
+R1> enable
+R1# configure terminal
+R1(config)# interface g0/1
+R1(config-if)# ip address 192.168.1.1 255.255.255.0
+R1(config-if)# no shutdown
+R1(config-if)# exit
+
+R2(config)# ip dhcp excluded-address 192.168.1.1 192.168.1.10
+R2(config)# ip dhcp pool POOL1
+R2(dhcp-config)# network 192.168.1.0 255.255.255.0
+R2(dhcp-config)# dns-server 8.8.8.8
+R2(dhcp-config)# domain-name jeremysitlab.com
+R2(dhcp-config)# default-router 192.168.1.1
+R2(dhcp-config)# exit
+
+R2(config)# ip dhcp excluded-address 192.168.2.1 192.168.2.10
+R2(config)# ip dhcp pool POOL2
+R2(dhcp-config)# network 192.168.2.0 255.255.255.0
+R2(dhcp-config)# dns-server 8.8.8.8
+R2(dhcp-config)# domain-name jeremysitlab.com
+R2(dhcp-config)# default-router 192.168.2.1
+R2(dhcp-config)# exit
+
+R2(config)# ip dhcp excluded-address 203.0.113.1  (R2-এর নিজের আইপি রিজার্ভ করলাম)
+R2(config)# ip dhcp pool POOL3
+R2(dhcp-config)# network 203.0.113.0 255.255.255.252
+R2(dhcp-config)# exit
+
+R1(config)# interface g0/0
+R1(config-if)# ip address dhcp
+R1(config-if)# no shutdown
+R1(config-if)# exit
+
+R1(config)# interface g0/1
+R1(config-if)# ip helper-address 203.0.113.1
+R1(config-if)# exit
+  ---
 
  ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
