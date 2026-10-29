@@ -768,7 +768,7 @@ R2(dhcp-config)# domain-name jeremysitlab.com
 R2(dhcp-config)# default-router 192.168.2.1
 R2(dhcp-config)# exit
 
-R2(config)# ip dhcp excluded-address 203.0.113.1  (R2-এর নিজের আইপি রিজার্ভ করলাম)
+R2(config)# ip dhcp excluded-address 203.0.113.1 
 R2(config)# ip dhcp pool POOL3
 R2(dhcp-config)# network 203.0.113.0 255.255.255.252
 R2(dhcp-config)# exit
@@ -782,7 +782,61 @@ R1(config)# interface g0/1
 R1(config-if)# ip helper-address 203.0.113.1
 R1(config-if)# exit
   ---
+Day- 41- Syslog
+Router> enable
+Router# configure terminal
+Router(config)# hostname R1
 
+Configuration
+
+! Interface IP Setup
+R1(config)# interface gigabitEthernet 0/0
+R1(config-if)# ip address 192.168.1.1 255.255.255.0
+R1(config-if)# no shutdown
+R1(config-if)# exit
+
+! Basic Authentication & Passwords
+R1(config)# enable password ccna
+R1(config)# username jeremy password ccna
+
+! Line Configuration for Console & VTY
+R1(config)# line console 0
+R1(config-line)# login local
+R1(config-line)# exit
+
+R1(config)# line vty 0 4
+R1(config-line)# login local
+R1(config-line)# exit
+
+Task 1
+R1# configure terminal
+R1(config)# interface gigabitEthernet 0/0
+R1(config-if)# shutdown
+
+R1(config-if)# no shutdown
+R1(config-if)# exit
+R1(config)# service timestamps log datetime msec
+
+Task 2
+C:\> telnet 192.168.1.1
+
+R1> enable
+R1# configure terminal
+R1(config)# interface gigabitEthernet 0/1
+R1(config-if)# no shutdown
+
+R1(config-if)# end
+R1# terminal monitor
+
+Task 3
+R1(config)# logging buffered 8192
+R1# show logging
+
+Task 4
+R1(config)# logging host 192.168.1.100
+R1(config)# logging trap debugging
+
+  ---
  ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS,DHCP,SNMP,Syslog
