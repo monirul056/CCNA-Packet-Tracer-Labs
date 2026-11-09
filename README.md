@@ -888,15 +888,87 @@ exit
 7. Verification / Client Side Test (From PC Command Prompt)
 # To test the SSH connection from PC1:
 ssh -l monirul 192.168.2.253
-
-
-
-
-
-
-
-
   ---
+
+Day 43 TFTP & FTP
+Router 1 (R1)
+R1> enable
+R1# configure terminal
+R1(config)# interface GigabitEthernet0/1
+R1(config-if)# ip address 10.0.0.254 255.255.255.0
+R1(config-if)# no shutdown
+R1(config-if)# exit
+
+R1(config)# interface GigabitEthernet0/0
+R1(config-if)# ip address 192.168.12.1 255.255.255.252
+R1(config-if)# no shutdown
+R1(config-if)#
+
+Router 2 (R2)
+R2> enable
+R2# configure terminal
+R2(config)# interface GigabitEthernet0/0
+R2(config-if)# ip address 192.168.12.2 255.255.255.252
+R2(config-if)# no shutdown
+R2(config-if)# exit
+
+! Configure Static Route to reach SRV1 network
+R2(config)# ip route 10.0.0.0 255.255.255.0 192.168.12.1
+R2(config)# exit
+
+IOS Upgrade on R1 via TFTP
+
+R1# ping 10.0.0.100
+
+R1# copy tftp: flash:
+Address or name of remote host []? 10.0.0.100
+Source filename []? c2900-universalk9-mz.SPA.155-3.M4a.bin
+Destination filename [c2900-universalk9-mz.SPA.155-3.M4a.bin]? [Press Enter]
+
+R1# configure terminal
+R1(config)# boot system flash:c2900-universalk9-mz.SPA.155-3.M4a.bin
+R1(config)# end
+R1# write
+R1# reload
+
+R1# delete flash:c2900-universalk9-mz.SPA.151-4.M4.bin
+Delete filename [c2900-universalk9-mz.SPA.151-4.M4.bin]? [Press Enter]
+Delete flash:/c2900-universalk9-mz.SPA.151-4.M4.bin? [confirm] [Press Enter]
+
+IOS Upgrade on R2 via FTP
+
+R2> enable
+R2# configure terminal
+R2(config)# ip ftp username monirul
+R2(config)# ip ftp password ccna
+R2(config)# end
+
+R2# copy ftp: flash:
+Address or name of remote host []? 10.0.0.100
+Source filename []? c2900-universalk9-mz.SPA.155-3.M4a.bin
+Destination filename [c2900-universalk9-mz.SPA.155-3.M4a.bin]? [Press Enter]
+
+R2# configure terminal
+R2(config)# boot system flash:c2900-universalk9-mz.SPA.155-3.M4a.bin
+R2(config)# end
+R2# write memory
+R2# reload
+
+R2# delete flash:c2900-universalk9-mz.SPA.151-4.M4.bin
+Delete filename [c2900-universalk9-mz.SPA.151-4.M4.bin]? [Press Enter]
+Delete flash:/c2900-universalk9-mz.SPA.151-4.M4.bin? [confirm] [Press Enter]
+
+Verification Commands
+show version
+show flash
+show running-config | include boot
+
+
+
+
+
+
+---
  ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS,DHCP,SNMP,Syslog, SSH, 
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS,DHCP,SNMP,Syslog, SSH,TFTP & FTP
