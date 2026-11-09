@@ -837,6 +837,66 @@ R1(config)# logging host 192.168.1.100
 R1(config)# logging trap debugging
 
   ---
+Day 42 SSH
+
+# CCNA SSH Configuration Lab Commands
+
+## 1. Basic Switch Setup
+enable
+configure terminal
+hostname SW2
+enable secret ccna
+username monirul secret ccna
+
+2. Management IP & Default Gateway Setup
+interface vlan 1
+ip address 192.168.2.253 255.255.255.0
+no shutdown
+exit
+
+ip default-gateway 192.168.2.1
+
+3. SSH & RSA Key Generation
+ip domain-name monirulitlab.com
+crypto key generate rsa
+# modulus size, type: 2048
+
+ip ssh version 2
+
+4. VTY Line Configuration (Allow SSH Only)
+line vty 0 15
+login local
+transport input ssh
+exec-timeout 5 0
+exit
+
+5. Console Port Security
+line con 0
+login local
+exec-timeout 5 0
+exit
+
+6. Access Control List (ACL) to Restrict SSH
+ip access-list standard SSH-ACCESS
+permit 192.168.1.1
+exit
+
+line vty 0 15
+access-class SSH-ACCESS in
+exit
+
+7. Verification / Client Side Test (From PC Command Prompt)
+# To test the SSH connection from PC1:
+ssh -l monirul 192.168.2.253
+
+
+
+
+
+
+
+
+  ---
  ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS,DHCP,SNMP,Syslog
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS,DHCP,SNMP,Syslog, SSH, 
