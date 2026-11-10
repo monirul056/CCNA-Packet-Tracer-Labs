@@ -963,12 +963,80 @@ show version
 show flash
 show running-config | include boot
 
+---
 
+Day 44 Static NAT
 
+# Static NAT Configuration (Cisco Packet Tracer)
 
+## 1. R1 (NAT Router) Configuration
 
+### Interface IP & Default Route
+
+enable
+configure terminal
+
+interface g0/0
+ ip address 172.16.0.254 255.255.255.0
+ no shutdown
+ exit
+
+interface g0/1
+ ip address 203.0.13.1 255.255.255.252
+ no shutdown
+ exit
+
+! Default route towards the Internet Router
+ip route 0.0.0.0 0.0.0.0 203.0.13.2
+
+Static NAT Configuration
+! Defining Inside and Outside Interfaces
+interface g0/0
+ ip nat inside
+ exit
+
+interface g0/1
+ ip nat outside
+ exit
+
+! Configuring Static 1-to-1 NAT Mappings
+ip nat inside source static 172.16.0.1 100.0.0.1
+ip nat inside source static 172.16.0.2 100.0.0.2
+ip nat inside source static 172.16.0.3 100.0.0.3
+ip nat inside source static 172.16.0.4 100.0.0.4
+ip nat inside source static 172.16.0.5 100.0.0.5
+
+Internet Router Configuration (Interface IP & Static Route)
+enable
+configure terminal
+
+! Connection to R1
+interface g0/1
+ ip address 203.0.13.2 255.255.255.252
+ no shutdown
+ exit
+
+! Connection to Server (8.8.8.8)
+interface g0/0
+ ip address 8.8.8.1 255.255.255.0
+ no shutdown
+ exit
+
+! Routing the NAT block (100.0.0.0/24) back to R1
+
+ip route 100.0.0.0 255.255.255.0 203.0.13.1
+
+Verification Commands (Run on R1)
+! View active NAT translations
+show ip nat translations
+
+! View NAT statistics (Hits, Misses, Active Translations)
+show ip nat statistics
+
+! Clear all dynamic NAT entries
+clear ip nat translation *
 
 ---
  ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS,DHCP,SNMP,Syslog, SSH,TFTP & FTP
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS,DHCP,SNMP,Syslog, SSH,TFTP & FTP, Static NAT, 
