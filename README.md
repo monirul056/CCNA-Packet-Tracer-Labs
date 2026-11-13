@@ -1037,6 +1037,158 @@ show ip nat statistics
 clear ip nat translation *
 
 ---
+Day-52 STP&HSRP Synchronaization
+
+ASW1 Configuration
+enable
+configure terminal
+hostname ASW1
+
+! VLAN 
+vlan 10
+ name SALES
+vlan 20
+ name IT
+exit
+
+! Trunk
+interface range gigabitEthernet 0/1 - 2
+ switchport mode trunk
+exit
+
+! PC1 port in VLAN 10-
+interface fastEthernet 0/1
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+exit
+end
+write memory
+
+ASW2 Configuration
+enable
+configure terminal
+hostname ASW2
+
+! VLAN 
+vlan 10
+ name SALES
+vlan 20
+ name IT
+exit
+
+! Trunk
+interface range gigabitEthernet 0/1 - 2
+ switchport mode trunk
+exit
+
+! PC2 port in VLAN 20-
+interface fastEthernet 0/1
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+exit
+end
+write memory
+
+DSW1 Configuration
+enable
+configure terminal
+hostname DSW1
+ip routing
+
+! VLAN
+vlan 10
+ name SALES
+vlan 20
+ name IT
+exit
+
+! Trunk 
+interface range gigabitEthernet 1/0/1 - 3
+ switchport trunk encapsulation dot1q (not supported)
+ switchport mode trunk
+exit
+
+! STP Root Bridge (VLAN 10 Primary, VLAN 20 Secondary)
+spanning-tree vlan 10 root primary
+spanning-tree vlan 20 root secondary
+
+! VLAN 10 SVI & HSRP Active Configuration
+interface vlan 10
+ ip address 10.0.10.1 255.255.255.0
+ standby version 2
+ standby 10 ip 10.0.10.254
+ standby 10 priority 105
+ standby 10 preempt
+ no shutdown
+exit
+
+! VLAN 20 SVI &  HSRP Standby Configuration
+interface vlan 20
+ ip address 10.0.20.1 255.255.255.0
+ standby version 2
+ standby 20 ip 10.0.20.254
+ standby 20 priority 95
+ standby 20 preempt
+ no shutdown
+exit
+end
+write memory
+
+DSW2 Configuration
+enable
+configure terminal
+hostname DSW2
+ip routing
+
+! VLAN
+vlan 10
+ name SALES
+vlan 20
+ name IT
+exit
+
+!Trunk
+interface range gigabitEthernet 1/0/1 - 3
+ switchport trunk encapsulation dot1q (not supported)
+ switchport mode trunk
+exit
+
+! STP Root Bridge (VLAN 20 Primary, VLAN 10 Secondary)
+spanning-tree vlan 10 root secondary
+spanning-tree vlan 20 root primary
+
+! VLAN 10 SVI & HSRP Standby Configuration
+interface vlan 10
+ ip address 10.0.10.2 255.255.255.0
+ standby version 2
+ standby 10 ip 10.0.10.254
+ standby 10 priority 95
+ standby 10 preempt
+ no shutdown
+exit
+
+! VLAN 20 SVI & HSRP Active Configuration
+interface vlan 20
+ ip address 10.0.20.2 255.255.255.0
+ standby version 2
+ standby 20 ip 10.0.20.254
+ standby 20 priority 105
+ standby 20 preempt
+ no shutdown
+exit
+end
+write memory
+
+
+Verification
+1. HSRP Check (DSW1 & DSW2): show standby brief
+2. STP Root Check (DSW1 & DSW2): show spanning-tree vlan 10, show spanning-tree vlan 20
+3. Ping Test : ping 10.0.20.10
+
+
+---
  ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
-* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS,DHCP,SNMP,Syslog, SSH,TFTP & FTP, Static NAT, 
+* **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS,DHCP,SNMP,Syslog, SSH,TFTP & FTP, Static NAT, STP&HSRP syncronaization
