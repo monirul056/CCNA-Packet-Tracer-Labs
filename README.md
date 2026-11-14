@@ -1189,6 +1189,111 @@ Verification
 
 
 ---
+Day-53-GRE-TUNNEL
+R1
+enable
+configure terminal
+hostname R1
+
+interface g0/0
+ ip address 10.0.1.1 255.255.255.0
+ no shutdown
+
+interface g0/0/0
+ ip address 100.0.0.2 255.255.255.252
+ no shutdown
+exit
+
+SPR1
+enable
+configure terminal
+hostname SPR1
+
+interface g0/0/0
+ ip address 100.0.0.1 255.255.255.252
+ no shutdown
+
+interface g0/0/1
+ ip address 150.0.0.1 255.255.255.252
+ no shutdown
+exit
+
+ SPR2
+enable
+configure terminal
+hostname SPR2
+
+interface g0/0/0
+ ip address 200.0.0.1 255.255.255.252
+ no shutdown
+
+interface g0/0/1
+ ip address 150.0.0.2 255.255.255.252
+ no shutdown
+exit
+
+R2
+enable
+configure terminal
+hostname R2
+
+interface g0/0
+ ip address 10.0.2.1 255.255.255.0
+ no shutdown
+
+interface g0/0/0
+ ip address 200.0.0.2 255.255.255.252
+ no shutdown
+exit
+
+SPR1
+ip route 200.0.0.0 255.255.255.252 150.0.0.2
+SPR2
+ip route 100.0.0.0 255.255.255.252 150.0.0.1
+R1
+ip route 0.0.0.0 0.0.0.0 100.0.0.1
+R2
+ip route 0.0.0.0 0.0.0.0 200.0.0.1
+
+GRE Tunnel
+R1
+interface tunnel 0
+ ip address 192.168.1.1 255.255.255.252
+ tunnel source g0/0/0
+ tunnel destination 200.0.0.2
+exit
+
+R2
+interface tunnel 0
+ ip address 192.168.1.2 255.255.255.252
+ tunnel source g0/0/0
+ tunnel destination 100.0.0.2
+exit
+
+R1
+router ospf 1
+ network 192.168.1.1 0.0.0.0 area 0
+ network 10.0.1.1 0.0.0.0 area 0
+ passive-interface g0/0
+exit
+
+R2
+router ospf 1
+ network 192.168.1.2 0.0.0.0 area 0
+ network 10.0.2.1 0.0.0.0 area 0
+ passive-interface g0/0
+exit
+
+Verification
+1. OSPF Neighbor Check : R1- show ip ospf neighbor --> 192.168.1.2 Neighbor
+2. Routing Table Check: R1- show ip route   O 10.0.2.0/24 [110/1001] via 192.168.1.2, Tunnel0
+3. End-to-End Ping: PC1 Command Prompt open and ping 10.0.2.100 ---Successfully reply
+
+
+
+
+
+
  ## 🛠️ Tools & Technologies
 * **Simulator:** Cisco Packet Tracer 9.0.1v
 * **Core Competencies:** IPv4 Subnetting (FLSM/VLSM), Static Routing, PDU Inspection, CLI Configuration, Physical Layer Troubleshooting, VLAN-Trunk & ROAS,STP & PVST+,LACP, PAgP & Layer 3, FSR,EIGRP,OSPF,HSRP,ACL Standard, DNS,DHCP,SNMP,Syslog, SSH,TFTP & FTP, Static NAT, STP&HSRP syncronaization
